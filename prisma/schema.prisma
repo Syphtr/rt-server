@@ -1,5 +1,5 @@
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
   // output        = "../node_modules/.prisma/client"
   // binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
@@ -9,18 +9,237 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Profile {
+  id                           Int                 @id @default(autoincrement())
+  public_identifier            String?             @unique
+  linkedin_profile_url         String
+  last_updated                 DateTime?
+  first_name                   String?
+  last_name                    String?
+  full_name                    String?
+  city                         String?
+  state                        String?
+  country                      String?
+  country_full_name            String?
+  summary                      String?
+  profile_pic_url              String?
+  background_cover_image_url   String?
+  headline                     String?
+  occupation                   String?
+  connections                  Int?
+  follower_count               Int?
+  experiences                  Experience[]
+  education                    Education[]
+  accomplishment_courses       Course[]
+  accomplishment_honors_awards HonourAward[]
+  accomplishment_organisations AccomplishmentOrg[]
+  accomplishment_patents       Patent[]
+  accomplishment_projects      Project[]
+  accomplishment_publications  Publication[]
+  accomplishment_test_scores   TestScore[]
+  activities                   Activity[]
+  articles                     Article[]
+  certifications               Certification[]
+  groups                       Group[]
+  languages                    Language[]
+  people_also_viewed           PeopleAlsoViewed[]
+  recommendations              String[]
+  similarly_named_profiles     SimilarProfile[]
+  skills                       String[]
+  volunteer_work               VolunteerWork[]
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  authorId  Int?
-  author    User?    @relation(fields: [authorId], references: [id])
+model Experience {
+  id                           Int       @id @default(autoincrement())
+  profileId                    Int
+  company                      String
+  title                        String
+  description                  String?
+  location                     String?
+  starts_at                    DateTime?
+  ends_at                      DateTime?
+  company_linkedin_profile_url String?
+  logo_url                     String?
+  profile                      Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Education {
+  id                          Int       @id @default(autoincrement())
+  profileId                   Int
+  school                      String
+  degree_name                 String
+  field_of_study              String?
+  starts_at                   DateTime?
+  ends_at                     DateTime?
+  description                 String?
+  activities_and_societies    String?
+  grade                       String?
+  logo_url                    String?
+  school_linkedin_profile_url String?
+  profile                     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Course {
+  id        Int     @id @default(autoincrement())
+  profileId Int
+  name      String?
+  number    String?
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model HonourAward {
+  id          Int       @id @default(autoincrement())
+  profileId   Int
+  title       String?
+  issuer      String?
+  issuedOn    DateTime?
+  description String?
+  profile     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model AccomplishmentOrg {
+  id          Int       @id @default(autoincrement())
+  profileId   Int
+  orgName     String?
+  title       String?
+  description String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  profile     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Patent {
+  id                Int       @id @default(autoincrement())
+  profileId         Int
+  title             String?
+  issuer            String?
+  issuedOn          DateTime?
+  description       String?
+  applicationNumber String?
+  patentNumber      String?
+  url               String?
+  profile           Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  profileId   Int
+  title       String?
+  description String?
+  url         String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  profile     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Publication {
+  id          Int       @id @default(autoincrement())
+  profileId   Int
+  name        String?
+  publisher   String?
+  publishedOn DateTime?
+  description String?
+  url         String?
+  profile     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model TestScore {
+  id          Int       @id @default(autoincrement())
+  profileId   Int
+  name        String?
+  score       String?
+  dateOn      DateTime?
+  description String?
+  profile     Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Activity {
+  id             Int     @id @default(autoincrement())
+  profileId      Int
+  activityStatus String?
+  link           String?
+  title          String?
+  profile        Profile @relation(fields: [profileId], references: [id])
+}
+
+model Article {
+  id            Int       @id @default(autoincrement())
+  profileId     Int
+  title         String?
+  link          String?
+  publishedDate DateTime?
+  author        String?
+  imageUrl      String?
+  profile       Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Certification {
+  id            Int       @id @default(autoincrement())
+  profileId     Int
+  authority     String?
+  displaySource String?
+  endsAt        DateTime?
+  licenseNumber String?
+  name          String?
+  startsAt      DateTime?
+  url           String?
+  profile       Profile   @relation(fields: [profileId], references: [id])
+}
+
+model Group {
+  id            Int     @id @default(autoincrement())
+  profileId     Int
+  profilePicUrl String?
+  name          String?
+  url           String?
+  profile       Profile @relation(fields: [profileId], references: [id])
+}
+
+model VolunteerWork {
+  id                        Int       @id @default(autoincrement())
+  profileId                 Int
+  cause                     String?
+  company                   String?
+  companyLinkedinProfileUrl String?
+  description               String?
+  endsAt                    DateTime?
+  logoUrl                   String?
+  startsAt                  DateTime?
+  title                     String?
+  profile                   Profile   @relation(fields: [profileId], references: [id])
+}
+
+model PeopleAlsoViewed {
+  id        Int     @id @default(autoincrement())
+  profileId Int
+  link      String?
+  name      String?
+  summary   String?
+  location  String?
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model SimilarProfile {
+  id        Int     @id @default(autoincrement())
+  profileId Int
+  name      String?
+  link      String?
+  summary   String?
+  location  String?
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Language {
+  id        Int     @id @default(autoincrement())
+  profileId Int
+  language  String
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Company {
+  id       Int     @id @default(autoincrement())
+  name     String
+  products String?
+  category String?
+  strength String?
 }
