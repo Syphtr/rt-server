@@ -9,13 +9,39 @@ import { ImportsService } from './imports.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 
-@Controller('imports')
+import * as fs from 'fs/promises';
+import * as path from 'path';
+
+@Controller('import')
 export class ImportsController {
   constructor(private readonly importsService: ImportsService) {}
+
+  @Get('delete-all')
+  async deleteAll() {
+    return this.importsService.deleteAllTables();
+  }
 
   @Get('find-all')
   async findAll() {
     return this.importsService.findAll();
+  }
+
+  @Get('hello')
+  async hello() {
+    return { msg: 'hello' };
+  }
+
+  @Get('read')
+  async readFile() {
+    const jsonFilePath = path.resolve(__dirname, '../../../profiles.json');
+
+    // Read the JSON file
+    const jsonData = await fs.readFile(jsonFilePath, 'utf-8');
+
+    // Parse the JSON data
+    const parsedData = JSON.parse(jsonData);
+
+    return { data: parsedData };
   }
 
   @Post('upload')

@@ -14,6 +14,41 @@ type ProfileOperation = {
 export class ImportsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async deleteAllTables() {
+    try {
+      await this.prisma.profile.deleteMany();
+      await this.prisma.experience.deleteMany();
+      await this.prisma.education.deleteMany();
+      await this.prisma.course.deleteMany();
+      await this.prisma.honourAward.deleteMany();
+      await this.prisma.accomplishmentOrg.deleteMany();
+      await this.prisma.patent.deleteMany();
+      await this.prisma.project.deleteMany();
+      await this.prisma.publication.deleteMany();
+      await this.prisma.testScore.deleteMany();
+      await this.prisma.activity.deleteMany();
+      await this.prisma.article.deleteMany();
+      await this.prisma.certification.deleteMany();
+      await this.prisma.group.deleteMany();
+      await this.prisma.volunteerWork.deleteMany();
+      await this.prisma.peopleAlsoViewed.deleteMany();
+      await this.prisma.similarProfile.deleteMany();
+      await this.prisma.language.deleteMany();
+      await this.prisma.company.deleteMany();
+      await this.prisma.product.deleteMany();
+      await this.prisma.category.deleteMany();
+      await this.prisma.companyProductCategory.deleteMany();
+      await this.prisma.user.deleteMany();
+      await this.prisma.job.deleteMany();
+      await this.prisma.client.deleteMany();
+      await this.prisma.candidateStage.deleteMany();
+
+      console.log('All tables deleted successfully');
+    } catch (error) {
+      console.error('Error deleting tables:', error);
+    }
+  }
+
   async findAll() {
     try {
       const profiles = await this.prisma.profile.findMany({

@@ -1,11 +1,9 @@
 generator client {
   provider = "prisma-client-js"
-  // output        = "../node_modules/.prisma/client"
-  // binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -47,6 +45,8 @@ model Profile {
   similarly_named_profiles     SimilarProfile[]
   skills                       String[]
   volunteer_work               VolunteerWork[]
+  jobs                         Job[]               @relation("JobCandidates")
+  candidateStages              CandidateStage[]
 }
 
 model Experience {
@@ -236,10 +236,115 @@ model Language {
   profile   Profile @relation(fields: [profileId], references: [id])
 }
 
+// =============== COMPANY
+
+enum CompanySize {
+  SEED
+  STARTUP
+  SCALEUP
+  MID_SIZE
+  BIG
+  HUGE
+}
+
 model Company {
-  id       Int     @id @default(autoincrement())
-  name     String
-  products String?
-  category String?
-  strength String?
+  id                       Int                      @id @default(autoincrement())
+  name                     String                   @unique
+  targetMarketSize         String
+  targetVertical           String
+  size                     CompanySize?
+  products                 Product[]
+  companyProductCategories CompanyProductCategory[]
+}
+
+model Product {
+  id                       Int                      @id @default(autoincrement())
+  name                     String                   @unique
+  companyId                Int
+  company                  Company                  @relation(fields: [companyId], references: [id])
+  companyProductCategories CompanyProductCategory[]
+}
+
+model Category {
+  id                       Int                      @id @default(autoincrement())
+  name                     String                   @unique
+  companyProductCategories CompanyProductCategory[]
+}
+
+model CompanyProductCategory {
+  id         Int      @id @default(autoincrement())
+  companyId  Int
+  company    Company  @relation(fields: [companyId], references: [id])
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  percentage Int
+
+  @@unique([companyId, productId, categoryId])
+}
+
+// ================ CUSTOMER
+
+model Customer {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  user      User[]
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  name      String
+
+  job        Job[]
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId Int?
+}
+
+model Job {
+  id              Int              @id @default(autoincrement())
+  clientId        Int?
+  client          Client?          @relation(fields: [clientId], references: [id])
+  department      String?
+  businessUnit    String?
+  hiringTeam      String[]
+  title           String?
+  salary          Int?
+  currency        String?
+  openSince       DateTime?
+  candidates      Profile[]        @relation("JobCandidates")
+  createdAt       DateTime?        @default(now())
+  updatedAt       DateTime?        @updatedAt
+  candidateStages CandidateStage[]
+  User            User?            @relation(fields: [userId], references: [id])
+  userId          Int?
+}
+
+model Client {
+  id   Int     @id @default(autoincrement())
+  name String? @unique
+  jobs Job[]
+}
+
+model CandidateStage {
+  id        Int      @id @default(autoincrement())
+  profileId Int?
+  profile   Profile? @relation(fields: [profileId], references: [id])
+  jobId     Int?
+  job       Job?     @relation(fields: [jobId], references: [id])
+  stage     Stage?
+}
+
+enum Stage {
+  APPLIED
+  ADDED
+  SCREENING
+  SCREENED
+  FIRST_INTERVIEW
+  MID_INTERVIEWS
+  FINAL_INTERVIEW
+  HIRED
 }
